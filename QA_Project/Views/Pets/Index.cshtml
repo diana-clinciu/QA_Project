@@ -1,0 +1,198 @@
+﻿@if (ViewBag.Message != null)
+{
+    <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.Message</h2>
+}
+
+@* Motorul de cautare *@
+
+<form id="searchForm" method="GET">
+    @{
+        var selectedSpecies = ViewBag.SpeciesFilter;
+        var selectedBreed = ViewBag.BreedFilter;
+        var selectedColor = ViewBag.ColorFilter;
+        var selectedLocation = ViewBag.LocationFilter;
+        var selectedSize = ViewBag.SizeFilter;
+        var selectedAge = ViewBag.AgeFilter;
+        var selectedSex = ViewBag.SexFilter;
+        var selectedSterilized = ViewBag.SterilizeFilter;
+        var selectedVaccined = ViewBag.VaccineFilter;
+    }
+
+    <div style="display: flex ; gap: 50px; margin-bottom: 10px; ">
+        <select class="form-select" name="speciesFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza specia</option>
+            @foreach (var species in ViewBag.SpeciesList)
+            {
+                <option value="@species" selected="@(species == selectedSpecies)">@(species)</option>
+            }
+        </select>
+
+        <select class="form-select" name="breedFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza rasa</option>
+            @foreach (var breed in ViewBag.BreedsList)
+            {
+                <option value="@breed" selected="@(breed == selectedBreed)">@(breed)</option>
+            }
+        </select>
+
+        <select class="form-select" name="colorFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza culoarea</option>
+            @foreach (var color in ViewBag.ColorList)
+            {
+                <option value="@color" selected="@(color == selectedColor)">@(color)</option>
+            }
+        </select>
+
+        <select class="form-select" name="locationFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza locatia</option>
+            @foreach (var location in ViewBag.LocationList)
+            {
+                <option value="@location" selected="@(location == selectedLocation)">@(location)</option>
+            }
+        </select>
+
+        <select class="form-select" name="sizeFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza marimea</option>
+            @foreach (var size in ViewBag.SizeList)
+            {
+                <option value="@size" selected="@(size == selectedSize)">@(size)</option>
+            }
+        </select>
+
+    </div>
+
+    <div style="padding: 10px; border-radius: 8px; display: flex; gap: 50px; margin-bottom: 10px;">
+
+        <select class="form-select" name="ageFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza varsta</option>
+            @foreach (var age in ViewBag.AgeList)
+            {
+                <option value="@age" selected="@(age == selectedAge)">@(age)</option>
+            }
+        </select>
+
+        <select class="form-select" name="sexFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Selecteaza sexul</option>
+            @foreach (var sex in ViewBag.SexList)
+            {
+                <option value="@sex" selected="@(sex == selectedSex)">@(sex)</option>
+            }
+        </select>
+
+        <select class="form-select" name="sterilizeFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Status sterilizare</option>
+            @foreach (var st in ViewBag.SterilizeList)
+            {
+                <option value="@st" selected="@(st == selectedSterilized)">@(st)</option>
+            }
+        </select>
+
+        <select class="form-select" name="vaccineFilter" style="width: 200px;background-color: #FEF3C7;">
+            <option value="">Status vaccinare</option>
+            @foreach (var vac in ViewBag.VaccineList)
+            {
+                <option value="@vac" selected="@(vac == selectedVaccined)">@(vac)</option>
+            }
+        </select>
+
+    </div>
+
+
+    <button class="inline-block px-8 py-3 m-2 text-gray-100 bg-yellow-600 rounded-md shadow hover:bg-yellow-500" type="submit">Adauga filtrele</button>
+
+</form>
+
+@if (ViewBag.NullSearchMessage != null)
+{
+    <p>@Html.Raw(ViewBag.NullSearchMessage.Replace("\n", "<br />"))</p>
+}
+
+<script>
+    function submitForm() {
+        document.getElementById("searchForm").submit();
+    }
+</script>
+
+
+
+<div class="flex flex-wrap bg-custom-background">
+    @foreach (var pet in ViewBag.Pets)
+    {
+        <div class="relative flex flex-col overflow-hidden rounded-xl bg-white bg-clip-border text-gray-700 shadow-md w-80 m-4">
+            <a href="/Pets/Show/@pet.PetId">
+                <div class="relative m-0 overflow-hidden text-gray-700 bg-transparent rounded-none shadow-none bg-clip-border">
+                    <img src="@pet.Image" alt="Pet Image" class="w-full h-41 object-cover">
+                </div>
+                <div class="p-6">
+                    <h4 class="block font-sans text-2xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
+                        @pet.Name
+                    </h4>
+                    <div class="flex justify-between">
+                        <span class="text-md mt-2 text-gray-900">@(pet.Sex ? "Mascul" : "Femela")</span>
+                        <span class="text-md mt-2 text-gray-900">@pet.Age @(pet.Age == 1 ? "An" : "Ani")</span>
+                    </div>
+                </div>
+            </a>
+            <div class="flex justify-around mb-4">
+                <a href="/Pets/Edit/@pet.PetId" class="mt-auto flex items-center justify-center px-3 py-2 text-white bg-blue-500 rounded-md shadow hover:bg-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                    Editeaza
+                </a>
+                <form method="post" action="/Pets/Delete/@pet.PetId">
+                    <button class="mt-auto flex items-center justify-center px-3 py-2  text-white bg-red-500 rounded-md shadow hover:bg-red-700" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                        Sterge
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+
+<a href="/Pets/New" class="inline-block px-8 py-3 m-2 text-gray-100 bg-yellow-600 rounded-md shadow hover:bg-yellow-500">
+    Adaugare anunt
+</a>
+
+
+@* pagination *@
+<div class="mb-5">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="@ViewBag.PaginationBaseUrl=1" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            @for (int i = 1; i <= ViewBag.lastPage; i++)
+            {
+                <li class="page-item"> <a class="page-link" href="@ViewBag.PaginationBaseUrl=@i">@(i)</a> </li>
+            }
+
+            <li class="page-item">
+                <a class="page-link" href="@ViewBag.PaginationBaseUrl=@(ViewBag.lastPage)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<style>
+    .bg-custom-background {
+        background-color: #FEF3C7;
+    }
+
+    .bg-custom-yellow {
+        background-color: #FDE68A;
+    }
+
+    .hover\:bg-custom-dark-yellow:hover {
+        background-color: #FEF3C7;
+    }
+</style>

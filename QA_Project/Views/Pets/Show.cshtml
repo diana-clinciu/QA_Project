@@ -1,0 +1,93 @@
+﻿@model QA_Project.Models.Pet
+
+
+<br />
+
+
+<div class="mx-auto flex flex-col items-center bg-white border border-gray-400 rounded-lg shadow md:flex-row md:max-w-screen-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+    <img class="object-cover w-full md:w-1/2 rounded-t-lg h-70 md:h-auto md:rounded-none md:rounded-l-lg" src="@Model.Image" alt="Pet Image">
+    <div class="flex flex-col justify-between p-4 w-full md:w-1/2 leading-normal">
+        <h3 class="text-2xl font-bold mb-4">@Model.Name</h3>
+        <table class="table-auto">
+            <tr>
+                <td><strong>Specie</strong></td>
+                <td>: @Model.Species</td>
+            </tr>
+            <tr>
+                <td><strong>Rasa</strong></td>
+                <td>: @Model.Breed</td>
+            </tr>
+            <tr>
+                <td><strong>Varsta</strong></td>
+                <td>: @Model.Age</td>
+            </tr>
+            <tr>
+                <td><strong>Marime</strong></td>
+                <td>: @Model.Size</td>
+            </tr>
+            <tr>
+                <td><strong>Gen</strong></td>
+                @if (Model.Sex)
+                {
+                    <td>: Mascul</td>
+                }
+                else
+                {
+                    <td>: Femela</td>
+                }
+            </tr>
+            <tr>
+                <td><strong>Culoare</strong></td>
+                <td>: @Model.Color</td>
+            </tr>
+            <tr>
+                <td><strong>Vaccinat</strong></td>
+                @if (Model.Vaccined)
+                {
+                    <td>: Da</td>
+                }
+                else
+                {
+                    <td>: Nu</td>
+                }
+            </tr>
+            <tr>
+                <td><strong>Sterilizat</strong></td>
+                @if (Model.Sterilized)
+                {
+                    <td>: Da</td>
+                }
+                else
+                {
+                    <td>: Nu</td>
+                }
+            </tr>
+            <tr>
+                <td><strong>Descriere</strong></td>
+                <td>: @Model.Description</td>
+            </tr>
+            <tr>
+                <td><strong>Locatie</strong></td>
+                <td>: @Model.Location</td>
+            </tr>
+        </table>
+        <br />
+    </div>
+</div>
+<br />
+
+<style>
+    .bg-custom-background {
+        background-color: #FEF3C7;
+    }
+
+    .bg-custom-yellow {
+        background-color: #FDE68A;
+    }
+
+    .hover\:bg-custom-dark-yellow:hover {
+        background-color: #FEF3C7;
+    }
+</style>
+
+
