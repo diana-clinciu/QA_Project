@@ -29,31 +29,15 @@ namespace QA_Project.Controllers
 
             var breedFilter = "";
 
-            var colorFilter = "";
-
-            var locationFilter = "";
-
             var ageFilter = "";
 
-            var sizeFilter = "";
-
-            var sexFilter = "";
-
-            var vaccineFilter = "";
-
-            var sterilizeFilter = "";
+          
 
             // retinem valorile distincte existente pentru fiecare atribut
 
             ViewBag.SpeciesList = GetDistinctSpecies();
             ViewBag.BreedsList = GetDistinctBreed();
-            ViewBag.ColorList = GetDistinctColor();
-            ViewBag.LocationList = GetDistinctLocation();
             ViewBag.AgeList = GetDistinctAge();
-            ViewBag.SizeList = GetDistinctSize();
-            ViewBag.SexList = GetDistinctSex();
-            ViewBag.VaccineList = GetDistinctVaccined();
-            ViewBag.SterilizeList = GetDistinctSterilized();
 
 
             //filtrare
@@ -83,31 +67,6 @@ namespace QA_Project.Controllers
                 pets = pets.Where(p => p.Breed == breedFilter).ToList();
             }
 
-
-            if (Convert.ToString(HttpContext.Request.Query["colorFilter"]) != null)
-            {
-                colorFilter = Convert.ToString(HttpContext.Request.Query["colorFilter"]).Trim();
-
-                ViewBag.ColorFilter = colorFilter;
-            }
-
-            if (!string.IsNullOrEmpty(colorFilter))
-            {
-                pets = pets.Where(p => p.Color == colorFilter).ToList();
-            }
-
-            if (Convert.ToString(HttpContext.Request.Query["locationFilter"]) != null)
-            {
-                locationFilter = Convert.ToString(HttpContext.Request.Query["locationFilter"]).Trim();
-
-                ViewBag.LocationFilter = locationFilter;
-            }
-
-            if (!string.IsNullOrEmpty(locationFilter))
-            {
-                pets = pets.Where(p => p.Location == locationFilter).ToList();
-            }
-
             if (Convert.ToString(HttpContext.Request.Query["ageFilter"]) != null)
             {
                 ageFilter = Convert.ToString(HttpContext.Request.Query["ageFilter"]).Trim();
@@ -118,57 +77,6 @@ namespace QA_Project.Controllers
             if (!string.IsNullOrEmpty(ageFilter))
             {
                 pets = pets.Where(p => p.Age.ToString() == ageFilter).ToList();
-            }
-
-            if (Convert.ToString(HttpContext.Request.Query["sizeFilter"]) != null)
-            {
-                sizeFilter = Convert.ToString(HttpContext.Request.Query["sizeFilter"]).Trim();
-
-                ViewBag.SizeFilter = sizeFilter;
-            }
-
-            if (!string.IsNullOrEmpty(sizeFilter))
-            {
-                pets = pets.Where(p => p.Size.ToString() == sizeFilter).ToList();
-            }
-
-            if (Convert.ToString(HttpContext.Request.Query["sexFilter"]) != null)
-            {
-                sexFilter = Convert.ToString(HttpContext.Request.Query["sexFilter"]).Trim();
-
-                ViewBag.SexFilter = sexFilter;
-            }
-
-            if (!string.IsNullOrEmpty(sexFilter))
-            {
-                pets = pets.Where(p => (p.Sex == false && sexFilter == "Femela") || (p.Sex == true && sexFilter == "Mascul")).ToList();
-            }
-
-            if (Convert.ToString(HttpContext.Request.Query["vaccineFilter"]) != null)
-            {
-                vaccineFilter = Convert.ToString(HttpContext.Request.Query["vaccineFilter"]).Trim();
-
-                ViewBag.VaccineFilter = vaccineFilter;
-            }
-
-
-            if (!string.IsNullOrEmpty(vaccineFilter))
-            {
-                pets = pets.Where(p => (p.Vaccined == false && vaccineFilter == "Nevaccinat") || 
-                                       (p.Vaccined == true && vaccineFilter == "Vaccinat")).ToList();
-            }
-
-            if (Convert.ToString(HttpContext.Request.Query["sterilizeFilter"]) != null)
-            {
-                sterilizeFilter = Convert.ToString(HttpContext.Request.Query["sterilizeFilter"]).Trim();
-
-                ViewBag.SterilizeFilter = sterilizeFilter;
-            }
-
-            if (!string.IsNullOrEmpty(sterilizeFilter))
-            {
-                pets = pets.Where(p => (p.Sterilized == false && sterilizeFilter == "Nesterilizat") || 
-                                 (p.Sterilized == true && sterilizeFilter == "Sterilizat")).ToList();
             }
 
 
@@ -198,11 +106,11 @@ namespace QA_Project.Controllers
 
             if (search != "")
             {
-                ViewBag.PaginationBaseUrl = $"/Pets/Index/?search={search}&speciesFilter={speciesFilter}&breedFilter={breedFilter}&colorFilter={colorFilter}&locationFilter={locationFilter}&ageFilter={ageFilter}&sizeFilter={sizeFilter}&sexFilter={sexFilter}&vaccineFilter={vaccineFilter}&sterilizeFilter={sterilizeFilter}&page";
+                ViewBag.PaginationBaseUrl = $"/Pets/Index/?search={search}&speciesFilter={speciesFilter}&breedFilter={breedFilter}&page";
             }
             else
             {
-                ViewBag.PaginationBaseUrl = $"/Pets/Index/?speciesFilter={speciesFilter}&breedFilter={breedFilter}&colorFilter={colorFilter}&locationFilter={locationFilter}&ageFilter={ageFilter}&sizeFilter={sizeFilter}&sexFilter={sexFilter}&vaccineFilter={vaccineFilter}&sterilizeFilter={sterilizeFilter}&page";
+                ViewBag.PaginationBaseUrl = $"/Pets/Index/?speciesFilter={speciesFilter}&breedFilter={breedFilter}&ageFilter={ageFilter}&page";
             }
 
             return View();
@@ -210,8 +118,12 @@ namespace QA_Project.Controllers
         }
         public ActionResult Show(int id)
         {
-            Pet pet = _db.Pets.First(pet => pet.PetId == id);
-
+            Pet pet = _db.Pets.FirstOrDefault(pet => pet.PetId == id);
+            if (pet == null)
+            {
+           
+                return NotFound();
+            }
             return View(pet);
         }
 
@@ -338,69 +250,14 @@ namespace QA_Project.Controllers
             return _db.Pets.Select(p => p.Breed).Distinct().ToList();
         }
 
-        public List<string> GetDistinctColor()
-        {
-            return _db.Pets.Select(p => p.Color).Distinct().ToList();
-        }
-        public List<string> GetDistinctLocation()
-        {
-            return _db.Pets.Select(p => p.Location).Distinct().ToList();
-        }
-
+      
         public List<string> GetDistinctAge()
         {
             return _db.Pets.Select(p => (p.Age).ToString()).Distinct().ToList();
         }
 
-        public List<string> GetDistinctSize()
-        {
-            return _db.Pets.Select(p => (p.Size).ToString()).Distinct().ToList();
-        }
-
-        public List<string> GetDistinctSex()
-        {
-            var distinctSexValues = _db.Pets.Select(p => p.Sex).Distinct().ToList();
-
-            List<string> sexList = new List<string>();
-
-            foreach (var sexValue in distinctSexValues)
-            {
-                string sexString = !sexValue ? "Femela" : "Mascul";
-                sexList.Add(sexString);
-            }
-
-            return sexList;
-        }
-
-        public List<string> GetDistinctVaccined()
-        {
-            var distinctVaccinevalues = _db.Pets.Select(p => p.Vaccined).Distinct().ToList();
-
-            List<string> vaccineList = new List<string>();
-
-            foreach (var vaccval in distinctVaccinevalues)
-            {
-                string vaccstring = !vaccval ? "Nevaccinat" : "Vaccinat";
-                vaccineList.Add(vaccstring);
-            }
-
-            return vaccineList;
-        }
-
-        public List<string> GetDistinctSterilized()
-        {
-            var distinctSterilizedvalues = _db.Pets.Select(p => p.Sterilized).Distinct().ToList();
-
-            List<string> sterList = new List<string>();
-
-            foreach (var sterval in distinctSterilizedvalues)
-            {
-                string vaccstring = !sterval ? "Nesterilizat" : "Sterilizat";
-                sterList.Add(vaccstring);
-            }
-
-            return sterList;
-        }
+      
+        
 
     }
 }

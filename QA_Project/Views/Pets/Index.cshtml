@@ -35,29 +35,7 @@
             }
         </select>
 
-        <select class="form-select" name="colorFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Selecteaza culoarea</option>
-            @foreach (var color in ViewBag.ColorList)
-            {
-                <option value="@color" selected="@(color == selectedColor)">@(color)</option>
-            }
-        </select>
-
-        <select class="form-select" name="locationFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Selecteaza locatia</option>
-            @foreach (var location in ViewBag.LocationList)
-            {
-                <option value="@location" selected="@(location == selectedLocation)">@(location)</option>
-            }
-        </select>
-
-        <select class="form-select" name="sizeFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Selecteaza marimea</option>
-            @foreach (var size in ViewBag.SizeList)
-            {
-                <option value="@size" selected="@(size == selectedSize)">@(size)</option>
-            }
-        </select>
+   
 
     </div>
 
@@ -71,29 +49,6 @@
             }
         </select>
 
-        <select class="form-select" name="sexFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Selecteaza sexul</option>
-            @foreach (var sex in ViewBag.SexList)
-            {
-                <option value="@sex" selected="@(sex == selectedSex)">@(sex)</option>
-            }
-        </select>
-
-        <select class="form-select" name="sterilizeFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Status sterilizare</option>
-            @foreach (var st in ViewBag.SterilizeList)
-            {
-                <option value="@st" selected="@(st == selectedSterilized)">@(st)</option>
-            }
-        </select>
-
-        <select class="form-select" name="vaccineFilter" style="width: 200px;background-color: #FEF3C7;">
-            <option value="">Status vaccinare</option>
-            @foreach (var vac in ViewBag.VaccineList)
-            {
-                <option value="@vac" selected="@(vac == selectedVaccined)">@(vac)</option>
-            }
-        </select>
 
     </div>
 
