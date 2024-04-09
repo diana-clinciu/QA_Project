@@ -9,6 +9,6 @@ namespace QA_Project.Data
         {
 
         }
-        public DbSet<Pet> Pets { get; set; }
+        public virtual DbSet<Pet> Pets { get; set; }
     }
 }
