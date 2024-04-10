@@ -103,8 +103,10 @@ namespace QA_Project.Controllers
             ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage); //ultima pagina
 
             ViewBag.Pets = paginatedPets;
+            
+            search = HttpContext.Request.Query["search"].ToString();
 
-            if (search != "")
+            if (!string.IsNullOrEmpty(search))
             {
                 ViewBag.PaginationBaseUrl = $"/Pets/Index/?search={search}&speciesFilter={speciesFilter}&breedFilter={breedFilter}&page";
             }
@@ -113,7 +115,7 @@ namespace QA_Project.Controllers
                 ViewBag.PaginationBaseUrl = $"/Pets/Index/?speciesFilter={speciesFilter}&breedFilter={breedFilter}&ageFilter={ageFilter}&page";
             }
 
-            return View();
+            return View(paginatedPets);
 
         }
         public ActionResult Show(int id)
@@ -205,7 +207,7 @@ namespace QA_Project.Controllers
                     );
 
                     // Încărcați imaginea la calea de stocare
-                    using (var fileStream = new FileStream(storagePath, FileMode.Create))
+                    using (var fileStream = new FileStream(storagePath, FileMode.OpenOrCreate))
                     {
                         await PetImage.CopyToAsync(fileStream);
                     }
@@ -214,6 +216,7 @@ namespace QA_Project.Controllers
                     pet.Image = "/images/" + PetImage.FileName;
                 }
 
+                _db.Pets.Update(pet); // Update the pet in the database
                 _db.SaveChanges();
 
                 return RedirectToAction("Index");
