@@ -48,6 +48,7 @@ namespace QATestProject
             {
                 { "page", "2" } // Requesting the second page
             });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>()); // Mock TempData
 
             // Act
             var result = controller.Index();
@@ -142,7 +143,8 @@ namespace QATestProject
             mockFile.Setup(_ => _.FileName).Returns(fileName);
             mockFile.Setup(_ => _.Length).Returns(ms.Length);
 
-            _mockEnvironment.Setup(_ => _.WebRootPath).Returns("path/to/wwwroot");
+            var executionPath = System.AppDomain.CurrentDomain.BaseDirectory;
+            _mockEnvironment.Setup(_ => _.WebRootPath).Returns(Path.Combine(executionPath, "..", "..", "..", "..", "QA_Project", "wwwroot"));
 
             var controller = new PetsController(_context, _mockEnvironment.Object);
 
