@@ -21,7 +21,7 @@ namespace QATestProject
         private readonly Fixture _fixture;
         private readonly ApplicationDbContext _context;
         private Mock<IWebHostEnvironment> _mockEnvironment;
-        
+
         public PetsControllerShould()
         {
             _fixture = new Fixture();
@@ -32,7 +32,7 @@ namespace QATestProject
             _context = context;
             _mockEnvironment = new Mock<IWebHostEnvironment>();
         }
-        
+
         [Fact]
         public async Task Index_NoFilter_ReturnsViewResult()
         {
@@ -40,15 +40,15 @@ namespace QATestProject
             var pets = _fixture.CreateMany<Pet>(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -60,34 +60,34 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_FilterSpecies_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
-                .With(p => p.Species, "Dog") 
+                .With(p => p.Species, "Dog")
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Species, "Cat")
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
             controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
             {
-                {"speciesFilter", "Dog"} 
+                {"speciesFilter", "Dog"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -97,34 +97,34 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_FilterBreed_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
-                .With(p => p.Breed, "Golden Retriever") 
+                .With(p => p.Breed, "Golden Retriever")
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Breed, "Poodle")
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
             controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
             {
-                {"breedFilter", "Golden Retriever"} 
+                {"breedFilter", "Golden Retriever"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -134,34 +134,34 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_FilterAge_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
-                .With(p => p.Age, 2) 
+                .With(p => p.Age, 2)
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Age, 3)
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
             controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
             {
-                {"ageFilter", "2"} 
+                {"ageFilter", "2"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -171,24 +171,24 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_SpeciesAndBreedFilter_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
                 .With(p => p.Species, "Lizard")
-                .With(p => p.Breed, "Gecko") 
+                .With(p => p.Breed, "Gecko")
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Species, "Mouse")
                 .With(p => p.Breed, "Big Mouse")
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -198,10 +198,10 @@ namespace QATestProject
                 {"breedFilter", "Gecko"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -212,24 +212,24 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_SpeciesAndAgeFilter_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
                 .With(p => p.Species, "Lizard")
-                .With(p => p.Age, 2) 
+                .With(p => p.Age, 2)
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Species, "Mouse")
                 .With(p => p.Age, 3)
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -239,10 +239,10 @@ namespace QATestProject
                 {"ageFilter", "2"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -253,24 +253,24 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_BreedAndAgeFilter_ReturnsViewResult()
         {
             // Arrange
             var pets = _fixture.Build<Pet>()
                 .With(p => p.Breed, "Golden Retriever")
-                .With(p => p.Age, 2) 
+                .With(p => p.Age, 2)
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
                 .With(p => p.Breed, "Poodle")
                 .With(p => p.Age, 3)
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -280,10 +280,10 @@ namespace QATestProject
                 {"ageFilter", "2"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -294,7 +294,7 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task Index_SpeciesBreedAndAgeFilter_ReturnsViewResult()
         {
@@ -302,7 +302,7 @@ namespace QATestProject
             var pets = _fixture.Build<Pet>()
                 .With(p => p.Species, "Lizard")
                 .With(p => p.Breed, "Gecko")
-                .With(p => p.Age, 2) 
+                .With(p => p.Age, 2)
                 .CreateMany(5).ToList();
 
             pets.Add(_fixture.Build<Pet>()
@@ -310,10 +310,10 @@ namespace QATestProject
                 .With(p => p.Breed, "Big Mouse")
                 .With(p => p.Age, 3)
                 .Create());
-            
+
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -324,10 +324,10 @@ namespace QATestProject
                 {"ageFilter", "2"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -339,7 +339,7 @@ namespace QATestProject
             IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
             Assert.Equal(5, petsResult.Count());
         }
-        
+
         [Fact]
         public async Task SpeciesFilterNotFound_ReturnsViewResult()
         {
@@ -349,7 +349,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -358,10 +358,10 @@ namespace QATestProject
                 {"speciesFilter", "Dog"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -369,7 +369,7 @@ namespace QATestProject
             Assert.NotEqual("Lizard", viewBag.SpeciesFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task BreedFilterNotFound_ReturnsViewResult()
         {
@@ -379,7 +379,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -388,10 +388,10 @@ namespace QATestProject
                 {"breedFilter", "Poodle"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -399,7 +399,7 @@ namespace QATestProject
             Assert.NotEqual("Golden Retriever", viewBag.BreedFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task AgeFilterNotFound_ReturnsViewResult()
         {
@@ -409,7 +409,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -418,10 +418,10 @@ namespace QATestProject
                 {"ageFilter", "3"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -429,7 +429,7 @@ namespace QATestProject
             Assert.NotEqual("2", viewBag.AgeFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task SpeciesAndBreedFilterNotFound_ReturnsViewResult()
         {
@@ -440,7 +440,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -450,10 +450,10 @@ namespace QATestProject
                 {"breedFilter", "Big Mouse"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -462,7 +462,7 @@ namespace QATestProject
             Assert.NotEqual("Gecko", viewBag.BreedFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task SpeciesAndAgeFilterNotFound_ReturnsViewResult()
         {
@@ -473,7 +473,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -483,10 +483,10 @@ namespace QATestProject
                 {"ageFilter", "3"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -495,7 +495,7 @@ namespace QATestProject
             Assert.NotEqual("2", viewBag.AgeFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task BreedAndAgeFilterNotFound_ReturnsViewResult()
         {
@@ -506,7 +506,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -516,10 +516,10 @@ namespace QATestProject
                 {"ageFilter", "3"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -528,7 +528,7 @@ namespace QATestProject
             Assert.NotEqual("2", viewBag.AgeFilter);
             Assert.Empty(viewBag.Pets);
         }
-        
+
         [Fact]
         public async Task SpeciesBreedAndAgeFilterNotFound_ReturnsViewResult()
         {
@@ -540,7 +540,7 @@ namespace QATestProject
                 .CreateMany(5).ToList();
             _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
-            
+
             var controller = new PetsController(_context, _mockEnvironment.Object);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
@@ -551,10 +551,10 @@ namespace QATestProject
                 {"ageFilter", "3"}
             });
             controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
-            
+
             // Act
             var result = controller.Index();
-            
+
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var viewBag = controller.ViewBag;
@@ -564,5 +564,238 @@ namespace QATestProject
             Assert.NotEqual("2", viewBag.AgeFilter);
             Assert.Empty(viewBag.Pets);
         }
+
+        // Test case for specie filter with minimum and maximum values
+        [Fact]
+        public async Task Index_SpeciesFilter_MinAndMaxValues_ReturnsViewResult()
+        {
+            // Arrange
+            var minSpecies = "aaa";
+            var maxSpecies = "zzz";
+
+            var pets = _fixture.Build<Pet>()
+                .With(p => p.Species, minSpecies)
+                .CreateMany(2).ToList();
+
+            pets.AddRange(_fixture.Build<Pet>()
+                .With(p => p.Species, maxSpecies)
+                .CreateMany(2));
+
+            _context.Pets.AddRange(pets);
+            await _context.SaveChangesAsync();
+
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "speciesFilter", minSpecies }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(minSpecies, viewBag.SpeciesFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with minSpecies
+
+
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "speciesFilter", maxSpecies }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            result = controller.Index();
+
+            // Assert
+            viewResult = Assert.IsType<ViewResult>(result);
+            viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(maxSpecies, viewBag.SpeciesFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with maxSpecies
+        }
+
+        // Test cases for invalid specie filter (already exists - adapt for min/max)
+        [Fact]
+        public async Task Index_InvalidSpecieFilter_ReturnsViewResult()
+        {
+            // Arrange
+            var invalidSpecieMin = "a"; // Non-existent specie
+            var invalidSpecieMax = "z"; // Non-existent specie
+
+            var pets = _fixture.Build<Pet>().CreateMany(5);
+            _context.Pets.AddRange(pets);
+            await _context.SaveChangesAsync();
+
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "speciesFilter", invalidSpecieMin }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(invalidSpecieMin, viewBag.SpeciesFilter); // Filter value is still set
+            Assert.Empty(viewBag.Pets); // No pets should be returned with an invalid filter
+
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "speciesFilter", invalidSpecieMax }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            result = controller.Index();
+
+            // Assert
+            viewResult = Assert.IsType<ViewResult>(result);
+            viewBag = controller.ViewBag;
+            viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(invalidSpecieMax, viewBag.SpeciesFilter); // Filter value is still set
+            Assert.Empty(viewBag.Pets); // No pets should be returned with an invalid filter
+        }
+
+        // Test cases for breed filter with minimum and maximum values (similar to specie)
+        [Fact]
+        public async Task Index_BreedFilter_MinAndMaxValues_ReturnsViewResult()
+        {
+            // Arrange
+            var minBreed = "aaa";
+            var maxBreed = "zzz";
+
+            var pets = _fixture.Build<Pet>()
+                .With(p => p.Breed, minBreed)
+                .CreateMany(2).ToList();
+
+            pets.AddRange(_fixture.Build<Pet>()
+                .With(p => p.Breed, maxBreed)
+                .CreateMany(2));
+
+            _context.Pets.AddRange(pets);
+            await _context.SaveChangesAsync();
+
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Creaza un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "breedFilter", minBreed }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(minBreed, viewBag.BreedFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with minBreed
+
+
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "breedFilter", maxBreed }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            result = controller.Index();
+
+            // Assert
+            viewResult = Assert.IsType<ViewResult>(result);
+            viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(maxBreed, viewBag.BreedFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with maxBreed
+        }
+
+        // Test cases for year filter with minimum and maximum values
+        [Fact]
+        public async Task Index_AgeFilter_MinAndMaxValues_ReturnsViewResult()
+        {
+            // Arrange
+            var minAge = 0; // Minimum possible age
+            var maxAge = 10; // Hypothetical maximum age for pets
+
+            var pets = _fixture.Build<Pet>()
+                .With(p => p.Age, minAge)
+                .CreateMany(2).ToList();
+
+            pets.AddRange(_fixture.Build<Pet>()
+                .With(p => p.Age, maxAge)
+                .CreateMany(2));
+
+            _context.Pets.AddRange(pets);
+            await _context.SaveChangesAsync();
+
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext(); // Crează un HttpContext default
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "ageFilter", minAge.ToString() }
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var viewBag = controller.ViewBag;
+            Assert.NotNull(viewBag);
+            Assert.Equal(minAge.ToString(), viewBag.AgeFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            IEnumerable<Pet> petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with minAge
+
+            // Repeat similar assertions for maxAge filter
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "ageFilter", maxAge.ToString() }
+            });
+            result = controller.Index();
+            viewResult = Assert.IsType<ViewResult>(result);
+            viewBag = controller.ViewBag;
+            Assert.Equal(maxAge.ToString(), viewBag.AgeFilter);
+            Assert.NotEmpty(viewBag.Pets);
+            petsResult = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewBag.Pets);
+            Assert.Equal(2, petsResult.Count()); // 2 pets with maxAge
+        }
+
     }
 }
+
+
+
