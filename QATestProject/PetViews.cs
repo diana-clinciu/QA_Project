@@ -125,6 +125,7 @@ namespace QATestProject
             Assert.Equal("Index", redirectToActionResult.ActionName);
             Assert.Equal(1, await _context.Pets.CountAsync());
         }
+        
         [Fact]
         public async Task New_UploadsImageAndSavesPetWithImagePath()
         {
@@ -256,6 +257,102 @@ namespace QATestProject
             Assert.Equal(2, result.Count()); // Should only contain distinct "Dog" and "Cat"
             Assert.Contains("Dog", result);
             Assert.Contains("Cat", result);
+        }
+
+        [Fact]
+        public async Task Index_CalculatesLastPageCorrectly()
+        {
+            // Arrange
+            var totalPets = 35;  // Total pets which is not a multiple of _perPage
+            var perPage = 12;    // Items per page
+            var pets = _fixture.CreateMany<Pet>(totalPets).ToList();
+            await _context.AddRangeAsync(pets);
+            await _context.SaveChangesAsync();
+
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "page", "1" } // Accessing the first page
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.NotNull(viewResult.Model);
+            var model = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewResult.Model);
+            Assert.Equal(perPage, model.Count()); // Should return perPage pets
+            Assert.Equal(3, controller.ViewBag.lastPage); // Should calculate 3 pages in total (35 items / 12 items per page rounded up)
+        }
+
+        [Fact]
+        public async Task Index_WithNoItems_CalculatesLastPageAsOne()
+        {
+            // Arrange
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                { "page", "1" } // Accessing the first page
+            });
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.NotNull(viewResult.Model);
+            var model = Assert.IsAssignableFrom<IEnumerable<Pet>>(viewResult.Model);
+            Assert.Empty(model); // Should return no pets
+            Assert.Equal(1, controller.ViewBag.lastPage); // Should calculate at least 1 page, even if there are no items
+                                                          // Additional assert to ensure that using Math.Min would fail this condition
+            Assert.NotEqual(0, controller.ViewBag.lastPage); // This line is to explicitly check against Math.Min 
+        }
+
+        [Fact]
+        public void Index_GeneratesCorrectPaginationBaseUrl_WithFilters()
+        {
+            // Arrange
+            var controller = new PetsController(_context, _mockEnvironment.Object);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+
+            // Simulate query parameters
+            controller.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+        {
+            { "speciesFilter", "Dog" },
+            { "breedFilter", "Labrador" },
+            { "ageFilter", "5" }
+        });
+
+            // Setup TempData properly using a mock or any temp data provider
+            controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            string expectedUrl = "/Pets/Index/?speciesFilter=Dog&breedFilter=Labrador&ageFilter=5&page";
+            string actualUrl = controller.ViewBag.PaginationBaseUrl?.ToString() ?? string.Empty;
+
+            // Normalize both strings by trimming and removing potential invisible characters
+            expectedUrl = expectedUrl.Trim();
+            actualUrl = actualUrl.Trim();
+
+            Assert.Equal(expectedUrl, actualUrl);
         }
 
 

@@ -100,7 +100,7 @@ namespace QA_Project.Controllers
 
             var paginatedPets = pets.Skip(offset).Take(_perPage); //se preiau articolele dupa offset
 
-            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage); //ultima pagina
+            ViewBag.lastPage = Math.Max(1, Math.Ceiling((float)totalItems / (float)_perPage)); //ultima pagina
 
             ViewBag.Pets = paginatedPets;
             
